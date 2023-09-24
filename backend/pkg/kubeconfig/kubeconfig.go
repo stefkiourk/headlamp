@@ -33,6 +33,7 @@ type Context struct {
 	Cluster     *api.Cluster           `json:"cluster"`
 	AuthInfo    *api.AuthInfo          `json:"authInfo"`
 	Source      int                    `json:"source"`
+	MetaData    map[string]interface{} `json:"metaData"`
 	OidcConf    *OidcConfig            `json:"oidcConfig"`
 	proxy       *httputil.ReverseProxy `json:"-"`
 }
@@ -198,7 +199,7 @@ func LoadContextsFromFile(kubeConfigPath string, source int) ([]Context, error) 
 		return nil, err
 	}
 
-	contexts, errs := LoadContextsFromAPIConfig(config)
+	contexts, errs := LoadContextsFromAPIConfig(config, nil)
 	if errs == nil {
 		return nil, errors.Join(errs...)
 	}
@@ -215,7 +216,7 @@ func LoadContextsFromFile(kubeConfigPath string, source int) ([]Context, error) 
 }
 
 // LoadContextsFromAPIConfig loads contexts from the given api.Config.
-func LoadContextsFromAPIConfig(config *api.Config) ([]Context, []error) {
+func LoadContextsFromAPIConfig(config *api.Config, metaData map[string]interface{}) ([]Context, []error) {
 	contexts := []Context{}
 	errors := []error{}
 
@@ -234,6 +235,7 @@ func LoadContextsFromAPIConfig(config *api.Config) ([]Context, []error) {
 			KubeContext: context,
 			Cluster:     cluster,
 			AuthInfo:    authInfo,
+			MetaData:    metaData,
 		}
 
 		err := context.SetupProxy()

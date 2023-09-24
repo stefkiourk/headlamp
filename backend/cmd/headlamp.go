@@ -1105,13 +1105,15 @@ func (c *HeadlampConfig) getClusters() []Cluster {
 
 	for _, context := range contexts {
 		context := context
+		if context.MetaData == nil {
+			context.MetaData = make(map[string]interface{})
+		}
+		context.MetaData["source"] = context.SourceStr()
 		clusters = append(clusters, Cluster{
 			Name:     context.Name,
 			Server:   context.Cluster.Server,
 			AuthType: context.AuthType(),
-			Metadata: map[string]interface{}{
-				"source": context.SourceStr(),
-			},
+			Metadata: context.MetaData,
 		})
 	}
 
@@ -1185,7 +1187,7 @@ func (c *HeadlampConfig) addCluster(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		contexts, setupErrors = kubeconfig.LoadContextsFromAPIConfig(config)
+		contexts, setupErrors = kubeconfig.LoadContextsFromAPIConfig(config, clusterReq.Metadata)
 	} else {
 		conf := &api.Config{
 			Clusters: map[string]*api.Cluster{
@@ -1202,7 +1204,7 @@ func (c *HeadlampConfig) addCluster(w http.ResponseWriter, r *http.Request) {
 			},
 		}
 
-		contexts, setupErrors = kubeconfig.LoadContextsFromAPIConfig(conf)
+		contexts, setupErrors = kubeconfig.LoadContextsFromAPIConfig(conf, clusterReq.Metadata)
 	}
 
 	if len(contexts) == 0 {
