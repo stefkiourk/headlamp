@@ -35,6 +35,11 @@ import {
   setDetailsViewHeaderAction,
 } from '../redux/actionButtonsSlice';
 import { setClusterChooserButtonComponent, setFunctionsToOverride } from '../redux/actions/actions';
+import {
+  addEventCallback,
+  HeadlampEvent,
+  HeadlampEventCallback,
+} from '../redux/eventCallbackSlice';
 import { setRoute, setRouteFilter } from '../redux/routesSlice';
 import store from '../redux/stores/store';
 
@@ -52,6 +57,8 @@ export type {
   DetailsViewSectionProps,
   DetailsViewSectionType,
   SidebarEntryProps,
+  HeadlampEventCallback,
+  HeadlampEvent,
 };
 export const DetailsViewDefaultHeaderActions = DefaultHeaderAction;
 export type { AppBarActionProcessorType };
@@ -557,6 +564,10 @@ export function registerSetTokenFunction(
  */
 export function registerGetTokenFunction(override: (cluster: string) => string | undefined) {
   store.dispatch(setFunctionsToOverride({ getToken: override }));
+}
+
+export function registerHeadlampEventCallback(callback: HeadlampEventCallback) {
+  store.dispatch(addEventCallback(callback));
 }
 
 export { DefaultAppBarAction, DefaultDetailsViewSection, getHeadlampAPIHeaders };

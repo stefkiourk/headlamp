@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { KubeObject, KubeObjectInterface } from '../../../lib/k8s/cluster';
+import { dispatchHeadlampEvent } from '../../../lib/util';
 import { CallbackActionOptions, clusterAction } from '../../../redux/clusterActionSlice';
+import { HeadlampEventType } from '../../../redux/eventCallbackSlice';
 import ActionButton from '../ActionButton';
 import AuthVisible from './AuthVisible';
 import EditorDialog from './EditorDialog';
@@ -62,6 +64,11 @@ export default function EditButton(props: EditButtonProps) {
         ...options,
       })
     );
+
+    dispatchHeadlampEvent({
+      type: HeadlampEventType.EDIT_RESOURCE,
+      data: { action: 'save', resourceKind: item?.kind || '' },
+    });
   }
 
   if (!item) {
@@ -85,8 +92,14 @@ export default function EditButton(props: EditButtonProps) {
       }}
     >
       <ActionButton
-        description={t('translation|Edit')}
-        onClick={() => setOpenDialog(true)}
+        description={t('tranlation|Edit')}
+        onClick={() => {
+          setOpenDialog(true);
+          dispatchHeadlampEvent({
+            type: HeadlampEventType.EDIT_RESOURCE,
+            data: { action: 'show', resourceKind: item?.kind || '' },
+          });
+        }}
         icon="mdi:pencil"
       />
       {openDialog && (

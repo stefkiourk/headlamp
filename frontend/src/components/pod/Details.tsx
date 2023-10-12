@@ -15,7 +15,9 @@ import { useParams } from 'react-router-dom';
 import { Terminal as XTerminal } from 'xterm';
 import { KubeContainerStatus } from '../../lib/k8s/cluster';
 import Pod from '../../lib/k8s/pod';
+import { dispatchHeadlampEvent } from '../../lib/util';
 import { DefaultHeaderAction } from '../../redux/actionButtonsSlice';
+import { HeadlampEventType } from '../../redux/eventCallbackSlice';
 import { LightTooltip, SectionBox, SimpleTable } from '../common';
 import Link from '../common/Link';
 import { LogViewer, LogViewerProps } from '../common/LogViewer';
@@ -374,8 +376,10 @@ export default function PodDetails(props: PodDetailsProps) {
                 <Tooltip title={t('Show Logs') as string}>
                   <IconButton
                     aria-label={t('logs')}
-                    onClick={() => setShowLogs(true)}
-                    size="medium"
+                    onClick={() => {
+                      setShowLogs(true);
+                      dispatchHeadlampEvent({ type: HeadlampEventType.POD_LOGS });
+                    }}
                   >
                     <Icon icon="mdi:file-document-box-outline" />
                   </IconButton>
@@ -390,8 +394,10 @@ export default function PodDetails(props: PodDetailsProps) {
                 <Tooltip title={t('Terminal / Exec') as string}>
                   <IconButton
                     aria-label={t('terminal') as string}
-                    onClick={() => setShowTerminal(true)}
-                    size="medium"
+                    onClick={() => {
+                      setShowTerminal(true);
+                      dispatchHeadlampEvent({ type: HeadlampEventType.POD_TERMINAL });
+                    }}
                   >
                     <Icon icon="mdi:console" />
                   </IconButton>
@@ -406,8 +412,10 @@ export default function PodDetails(props: PodDetailsProps) {
                 <Tooltip title={t('Attach') as string}>
                   <IconButton
                     aria-label={t('attach') as string}
-                    onClick={() => setIsAttached(true)}
-                    size="medium"
+                    onClick={() => {
+                      setIsAttached(true);
+                      dispatchHeadlampEvent({ type: HeadlampEventType.POD_ATTACH });
+                    }}
                   >
                     <Icon icon="mdi:connection" />
                   </IconButton>

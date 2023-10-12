@@ -17,7 +17,9 @@ import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import { KubeObject } from '../../../lib/k8s/cluster';
+import { dispatchHeadlampEvent } from '../../../lib/util';
 import { CallbackActionOptions, clusterAction } from '../../../redux/clusterActionSlice';
+import { HeadlampEventType } from '../../../redux/eventCallbackSlice';
 import { LightTooltip } from '../Tooltip';
 import AuthVisible from './AuthVisible';
 
@@ -82,8 +84,9 @@ export default function ScaleButton(props: ScaleButtonProps) {
       <Tooltip title={t('translation|Scale') as string}>
         <IconButton
           aria-label={t('translation|scale')}
-          onClick={() => setOpenDialog(true)}
-          size="medium"
+          onClick={() => {
+            setOpenDialog(true);
+          }}
         >
           <Icon icon="mdi:content-copy" />
         </IconButton>
@@ -216,7 +219,13 @@ function ScaleDialog(props: ScaleDialogProps) {
         <Button onClick={onClose} color="primary">
           {t('translation|Cancel')}
         </Button>
-        <Button onClick={() => onSave(numReplicas)} color="primary">
+        <Button
+          onClick={() => {
+            onSave(numReplicas);
+            dispatchHeadlampEvent({ type: HeadlampEventType.SCALE_RESOURCE });
+          }}
+          color="primary"
+        >
           {t('translation|Apply')}
         </Button>
       </DialogActions>

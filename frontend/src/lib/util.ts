@@ -1,6 +1,7 @@
 import humanizeDuration from 'humanize-duration';
 import React from 'react';
 import { useHistory } from 'react-router';
+import { HeadlampEvent, HeadlampEventType, trackEvent } from '../redux/eventCallbackSlice';
 import { filterGeneric, filterResource } from '../redux/filterSlice';
 import { useTypedSelector } from '../redux/reducers/reducers';
 import store from '../redux/stores/store';
@@ -392,6 +393,16 @@ export function useId(prefix = '') {
   );
 
   return id;
+}
+
+export function dispatchHeadlampEvent(eventInfo: HeadlampEvent | HeadlampEventType) {
+  let event: HeadlampEvent;
+  if (typeof eventInfo === 'string') {
+    event = { type: eventInfo };
+  } else {
+    event = eventInfo;
+  }
+  store.dispatch(trackEvent(event));
 }
 
 // Make units available from here
