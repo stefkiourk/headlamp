@@ -203,11 +203,13 @@ export function updateSettingsPackages(
  *
  * @param settingsPackages The packages settings knows about.
  * @param onSettingsChange Called when the plugins are different to what is in settings.
+ * @param onIncompatible Called when there are incompatible plugins.
  *
  */
 export async function fetchAndExecutePlugins(
   settingsPackages: PluginInfo[],
-  onSettingsChange: (plugins: PluginInfo[]) => void
+  onSettingsChange: (plugins: PluginInfo[]) => void,
+  onIncompatible: (plugins: Record<string, PluginInfo>) => void
 ) {
   const pluginPaths = (await fetch(`${helpers.getAppUrl()}plugins`).then(resp =>
     resp.json()
@@ -257,7 +259,8 @@ export async function fetchAndExecutePlugins(
 
   // Can set this to a semver version range like '>=0.8.0-alpha.3'.
   // '' means all versions.
-  const compatibleHeadlampPluginVersion = '';
+  // const compatibleHeadlampPluginVersion = '';
+  const compatibleHeadlampPluginVersion = '>=0.8.0-alpha.3';
 
   const { sourcesToExecute, incompatiblePlugins } = filterSources(
     sources,
@@ -268,12 +271,7 @@ export async function fetchAndExecutePlugins(
   );
 
   if (Object.keys(incompatiblePlugins).length > 0) {
-    console.warn(
-      'The following plugins are not compatible and will not be executed:' +
-        Object.values(incompatiblePlugins)
-          .map(p => p.name)
-          .join(', ')
-    );
+    onIncompatible(incompatiblePlugins);
   }
 
   sourcesToExecute.forEach((source, index) => {
