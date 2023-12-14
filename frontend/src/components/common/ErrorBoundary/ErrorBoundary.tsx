@@ -1,4 +1,6 @@
 import { Children, Component, ComponentType, isValidElement, ReactElement } from 'react';
+import { dispatchHeadlampEvent } from '../../../lib/util';
+import { HeadlampEventType } from '../../../redux/eventCallbackSlice';
 
 export interface ErrorBoundaryProps {
   fallback?: ComponentType<{ error: Error }> | ReactElement | null;
@@ -41,6 +43,9 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, State> 
 
   render() {
     const { error } = this.state;
+    if (error) {
+      dispatchHeadlampEvent({ type: HeadlampEventType.ERROR_BOUNDARY, data: error });
+    }
     if (!error) {
       return this.props.children;
     }
